@@ -37,6 +37,10 @@ func (c *Client) Close() {
 	c.pool.Close()
 }
 
+func (c *Client) Pool() *pgxpool.Pool {
+	return c.pool
+}
+
 // FetchRows executes a query and returns normalized records
 func (c *Client) FetchRows(ctx context.Context, query string, args ...interface{}) ([]domain.Record, error) {
 	rows, err := c.pool.Query(ctx, query, args...)
