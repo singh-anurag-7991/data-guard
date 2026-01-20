@@ -48,6 +48,22 @@ Example Rule:
 go test ./... -cover
 ```
 
+### Running the Server
+```bash
+go run cmd/server/main.go
+# Server listens on :8080
+```
+
+### Ingesting Data (Example)
+```bash
+curl -X POST localhost:8080/ingest/api -d '{
+  "source_id": "test",
+  "schema": {"amount": "number"},
+  "rules": [{"id": "r1", "field": "amount", "checks": [{"op": "gt", "value": 0}]}],
+  "data": [{"amount": 10}, {"amount": -5}]
+}'
+```
+
 ## Roadmap
 - [ ] Phase 1: Core Engine (Done)
 - [ ] Phase 2: Ingestion Layers (Next)
