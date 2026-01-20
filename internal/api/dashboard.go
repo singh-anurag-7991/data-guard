@@ -9,10 +9,10 @@ import (
 )
 
 type DashboardHandler struct {
-	repo *storage.Repository
+	repo storage.Provider
 }
 
-func NewDashboardHandler(repo *storage.Repository) *DashboardHandler {
+func NewDashboardHandler(repo storage.Provider) *DashboardHandler {
 	return &DashboardHandler{repo: repo}
 }
 

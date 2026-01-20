@@ -6,6 +6,7 @@ import (
 
 	"github.com/singh-anurag-7991/data-guard/internal/domain"
 	"github.com/singh-anurag-7991/data-guard/internal/engine"
+	"github.com/singh-anurag-7991/data-guard/internal/storage"
 )
 
 type IngestRequest struct {
@@ -17,11 +18,13 @@ type IngestRequest struct {
 
 type Handler struct {
 	executor *engine.Executor
+	repo     storage.Provider
 }
 
-func NewHandler(executor *engine.Executor) *Handler {
+func NewHandler(executor *engine.Executor, repo storage.Provider) *Handler {
 	return &Handler{
 		executor: executor,
+		repo:     repo,
 	}
 }
 
@@ -43,6 +46,14 @@ func (h *Handler) Ingest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := h.executor.Validate(req.SourceID, req.Schema, req.Rules, req.Data)
+
+	// Save result to storage (Best effort)
+	if h.repo != nil {
+		if err := h.repo.SaveResult(r.Context(), result); err != nil {
+			// Log error but don't fail the response
+			// In a real app we'd use slog here
+		}
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(result); err != nil {

@@ -26,7 +26,7 @@ func main() {
 
 	// Create context for DB connection
 	ctx := context.Background() // basic root context
-	var repo *storage.Repository
+	var repo storage.Provider
 
 	if dbURL != "" {
 		pgClient, err := postgres.NewClient(ctx, dbURL)
@@ -36,13 +36,16 @@ func main() {
 		}
 		defer pgClient.Close()
 		repo = storage.NewRepository(pgClient)
+	} else {
+		slog.Info("DATABASE_URL not set, using In-Memory storage (Demo Mode)")
+		repo = storage.NewMemoryStore()
 	}
 
 	// Initialize Engine
 	exec := engine.NewExecutor()
 
 	// Initialize API Handlers
-	ingestHandler := api.NewHandler(exec)
+	ingestHandler := api.NewHandler(exec, repo)
 	dashboardHandler := api.NewDashboardHandler(repo)
 
 	// Register Routes

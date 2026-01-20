@@ -13,7 +13,7 @@ import (
 
 func TestHandler_Ingest(t *testing.T) {
 	exec := engine.NewExecutor()
-	handler := NewHandler(exec)
+	handler := NewHandler(exec, nil)
 
 	reqBody := IngestRequest{
 		SourceID: "test_source",
